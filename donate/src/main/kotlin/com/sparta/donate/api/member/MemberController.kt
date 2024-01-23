@@ -1,7 +1,9 @@
 package com.sparta.donate.api.member
 
 import com.sparta.donate.application.member.MemberService
+import com.sparta.donate.dto.member.request.SignInRequest
 import com.sparta.donate.dto.member.request.SignUpRequest
+import com.sparta.donate.dto.member.response.JwtResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,6 +22,12 @@ class MemberController(
     fun signup(@Valid @RequestBody request: SignUpRequest): ResponseEntity<Unit> {
         val id = memberService.signup(request)
         return ResponseEntity.created(URI.create(String.format("/api/v1/members/%d", id))).build()
+    }
+
+    @PostMapping("/signin")
+    fun signup(@Valid @RequestBody request: SignInRequest): ResponseEntity<JwtResponse> {
+        val jwt = memberService.signin(request)
+        return ResponseEntity.ok(jwt)
     }
 
 }
