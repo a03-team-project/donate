@@ -9,7 +9,9 @@ import com.sparta.donate.repository.member.MemberRepository
 import com.sparta.donate.repository.post.PostRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+
 import org.springframework.transaction.annotation.Transactional
+
 
 @Service
 class CommentService(
@@ -18,6 +20,7 @@ class CommentService(
     private val commentRepository: CommentRepository,
     private val donateRepository: DonateRepository
 ) {
+
 
     @Transactional
     fun createComment(postId: Long, request: CommentRequest): CommentResponse {
@@ -41,6 +44,7 @@ class CommentService(
         val comment = getByIdOrNull(commentId)
 
         comment.update(request.content)
+
 
         return comment.toResponse(donationAmount)
 //        commentRepository.findById(commentId)
