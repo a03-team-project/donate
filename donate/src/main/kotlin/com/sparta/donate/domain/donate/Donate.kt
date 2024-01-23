@@ -1,6 +1,7 @@
 package com.sparta.donate.domain.donate
 
 import com.sparta.donate.domain.member.Member
+import com.sparta.donate.domain.post.Post
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
@@ -9,7 +10,8 @@ import org.hibernate.annotations.OnDeleteAction
 @Table(name = "donates")
 class Donate private constructor(
     _amount: Long,
-    _member: Member
+    _member: Member,
+    _post: Post
 ) {
 
     @Id
@@ -25,5 +27,10 @@ class Donate private constructor(
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "member_id")
     val member: Member = _member
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "post_id")
+    val post: Post = _post
 
 }

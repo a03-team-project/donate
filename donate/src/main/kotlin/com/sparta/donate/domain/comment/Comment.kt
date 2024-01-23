@@ -3,6 +3,7 @@ package com.sparta.donate.domain.comment
 import com.sparta.donate.domain.member.Member
 import com.sparta.donate.domain.post.Post
 import com.sparta.donate.dto.comment.request.CommentRequest
+import com.sparta.donate.dto.comment.response.CommentResponse
 import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
@@ -39,6 +40,19 @@ class Comment private constructor(
     var post: Post = _post
         private set
 
+    fun toResponse(amount: Long): CommentResponse{
+        return CommentResponse(
+            id = id!!,
+            nickname = member.nickname,
+            date = createdAt,
+            content = content,
+            donationAmount = amount
+        )
+    }
+
+    fun update(newContent: String){
+        content = newContent
+    }
     companion object {
         fun toEntity(request: CommentRequest, member: Member, post: Post): Comment {
             return Comment(
