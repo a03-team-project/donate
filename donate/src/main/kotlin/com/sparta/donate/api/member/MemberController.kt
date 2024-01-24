@@ -25,9 +25,15 @@ class MemberController(
     }
 
     @PostMapping("/signin")
-    fun signup(@Valid @RequestBody request: SignInRequest): ResponseEntity<JwtResponse> {
+    fun signin(@Valid @RequestBody request: SignInRequest): ResponseEntity<JwtResponse> {
         val jwt = memberService.signin(request)
         return ResponseEntity.ok(jwt)
+    }
+
+    @PostMapping("/logout")
+    fun logout(): ResponseEntity<Unit> {
+        memberService.logout()
+        return ResponseEntity.ok().build()
     }
 
 }

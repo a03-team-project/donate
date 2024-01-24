@@ -38,8 +38,20 @@ class Member private constructor(
     var role: String = _role
         private set
 
+    @Column(name = "refresh_token")
+    var refreshToken: String? = null
+        private set
+
     @Column(name = "email", unique = true)
     val email: String = _email
+
+    fun saveRefreshToken(refreshToken: String) {
+        this.refreshToken = refreshToken
+    }
+
+    fun logout() {
+        this.refreshToken = null
+    }
 
     companion object {
         fun of(request: SignUpRequest) = Member(

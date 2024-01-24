@@ -13,11 +13,15 @@ class CustomUserDetailsService(
     private val memberRepository: MemberRepository
 ) : UserDetailsService {
 
-    override fun loadUserByUsername(username: String): UserDetails =
-        memberRepository.findByNickname(username)
-            ?.let { generateUserDetails(it) }
-            ?: throw RuntimeException()
+    override fun loadUserByUsername(username: String): UserDetails? {
+        val member = memberRepository.findByNickname(username)
 
+        return if(member?.refreshToken != null) {
+            generateUserDetails(member)
+        } else {
+            null
+        }
+    }
 
     private fun generateUserDetails(member: Member): UserDetails =
         User(
