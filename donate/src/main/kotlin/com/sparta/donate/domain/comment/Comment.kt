@@ -2,6 +2,7 @@ package com.sparta.donate.domain.comment
 
 import com.sparta.donate.domain.member.Member
 import com.sparta.donate.domain.post.Post
+import com.sparta.donate.dto.comment.request.CommentRequest
 import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
@@ -37,4 +38,14 @@ class Comment private constructor(
     @JoinColumn(name = "post_id")
     var post: Post = _post
         private set
+
+    companion object {
+        fun toEntity(request: CommentRequest, member: Member, post: Post): Comment {
+            return Comment(
+                _member = member,
+                _content = request.content,
+                _post = post
+            )
+        }
+    }
 }

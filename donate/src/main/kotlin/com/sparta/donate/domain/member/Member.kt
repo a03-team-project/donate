@@ -1,5 +1,6 @@
 package com.sparta.donate.domain.member
 
+import com.sparta.donate.dto.member.request.SignUpRequest
 import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
 
@@ -20,7 +21,6 @@ class Member private constructor(
     var id: Long? = null
         private set
 
-
     @Column(name = "nickname", unique = true)
     var nickname: String = _nickname
         private set
@@ -40,6 +40,16 @@ class Member private constructor(
 
     @Column(name = "email", unique = true)
     val email: String = _email
+
+    companion object {
+        fun of(request: SignUpRequest) = Member(
+            _nickname = request.nickname,
+            _name = request.name,
+            _password = request.password,
+            _role = request.role,
+            _email = request.email
+        )
+    }
 
 }
 
