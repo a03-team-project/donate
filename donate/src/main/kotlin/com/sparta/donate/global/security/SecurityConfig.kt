@@ -28,12 +28,9 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
-                    "/api/v1/signup",
-                    "/api/v1/signin",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**"
+                    "/api/v1/members/signup", "/api/v1/members/signin", "/swagger-ui/**", "/v3/api-docs/**"
                 ).permitAll()
-                it.requestMatchers(PathRequest.toH2Console()).permitAll()
+                    .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

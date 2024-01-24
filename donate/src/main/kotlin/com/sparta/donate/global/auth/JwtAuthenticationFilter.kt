@@ -22,8 +22,8 @@ class JwtAuthenticationFilter(
     ) {
         val jwt = jwtResolver.resolveToken(request)
 
-        jwt.let {
-            jwtResolver.verifyAccessToken(it!!)
+        jwt?.let {
+            jwtResolver.verifyAccessToken(it)
                 .onSuccess { claims ->
                     userDetailsService.loadUserByUsername(claims["nickname"] as String)
                         .let { userDetails -> UsernamePasswordAuthenticationToken.authenticated(userDetails, "", userDetails.authorities) }
@@ -31,9 +31,10 @@ class JwtAuthenticationFilter(
                 .onFailure {exception ->
                     when (exception) {
                         is ExpiredJwtException -> request.setAttribute("exception", ErrorCode.EXPIRED_ACCESS_TOKEN)
+                        else -> request.setAttribute("exception", ErrorCode.COMMON_UNAUTHORIZED)
                     }
                 }
-            filterChain.doFilter(request, response)
         }
+        filterChain.doFilter(request, response)
     }
 }
