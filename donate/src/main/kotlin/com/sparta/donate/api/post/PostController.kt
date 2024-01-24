@@ -1,7 +1,7 @@
 package com.sparta.donate.api.post
 
+import com.sparta.donate.application.post.PostService
 import com.sparta.donate.domain.common.SortOrder
-import com.sparta.donate.domain.post.service.PostService
 import com.sparta.donate.dto.post.request.CreatePostRequest
 import com.sparta.donate.dto.post.request.UpdatePostRequest
 import com.sparta.donate.dto.post.response.PostResponse
@@ -25,7 +25,6 @@ class PostController(private val postService: PostService) {
     fun getAllPostList(
         @RequestParam sortOrder: SortOrder
     ): ResponseEntity<List<PostResponse>> {
-
         return ResponseEntity.status(HttpStatus.OK).body(postService.getAllPostList(sortOrder))
     }
 
