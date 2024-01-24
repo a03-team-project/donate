@@ -57,9 +57,9 @@ class Post private constructor(
             id = id,
             title = title,
             content = content,
-            member = member.toString(),
-            createdAt = createdAt.toString(),
-            endedAt = endedAt.toString()
+            member = member.nickname,
+            createdAt = createdAt,
+            endedAt = endedAt
         )
 
     fun updatePost(request: UpdatePostRequest) {
