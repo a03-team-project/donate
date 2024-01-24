@@ -19,7 +19,7 @@ class JwtResolver(
     private val BEARER_PATTERN = Regex("^Bearer (.*?)$")
 
     fun resolveToken(request: HttpServletRequest): String? {
-        val header = request.getHeader(HttpHeaders.AUTHORIZATION)
+        val header = request.getHeader(HttpHeaders.AUTHORIZATION) ?: return null
         return BEARER_PATTERN.find(header)?.groupValues?.get(1)
     }
 

@@ -11,14 +11,17 @@ import org.springframework.stereotype.Component
 @Component
 class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
     override fun commence(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        authException: AuthenticationException
+        request: HttpServletRequest?,
+        response: HttpServletResponse?,
+        authException: AuthenticationException?
     ) {
-        val code = request.getAttribute("exception") as ErrorCode
+        val code: ErrorCode? = request?.getAttribute("exception") as ErrorCode?
 
-        when (code) {
-            ErrorCode.EXPIRED_ACCESS_TOKEN -> setResponse(response, code)
+        code?.let {
+            when (code) {
+                ErrorCode.EXPIRED_ACCESS_TOKEN -> setResponse(response!!, code)
+                ErrorCode.COMMON_UNAUTHORIZED -> setResponse(response!!, code)
+            }
         }
     }
 

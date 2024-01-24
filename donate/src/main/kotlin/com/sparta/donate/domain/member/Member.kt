@@ -34,7 +34,6 @@ class Member private constructor(
         private set
 
     @Column(name = "role")
-    @Enumerated(EnumType.STRING)
     var role: String = _role
         private set
 
