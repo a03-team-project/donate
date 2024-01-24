@@ -3,7 +3,6 @@ package com.sparta.donate.domain.comment
 import com.sparta.donate.domain.member.Member
 import com.sparta.donate.domain.post.Post
 import com.sparta.donate.dto.comment.request.CommentRequest
-import com.sparta.donate.dto.comment.response.CommentResponse
 import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
