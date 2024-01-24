@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface DonateRepository : JpaRepository<Donate, Long>
+interface DonateRepository : JpaRepository<Donate, Long> {
+    fun findByMemberIdAndPostId(memberId: Long, postId: Long): Donate?
+}

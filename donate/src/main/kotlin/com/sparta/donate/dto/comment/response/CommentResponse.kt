@@ -1,11 +1,11 @@
 package com.sparta.donate.dto.comment.response
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class CommentResponse(
     val id: Long,
     val nickname: String,
-    val date: LocalDate,
+    val date: LocalDateTime,
     val content: String,
-    val donationAmount: Long
+    val donationAmount: Long?
 )
