@@ -6,6 +6,8 @@ import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
+import java.time.Instant
+import java.util.*
 
 @Component
 class JwtResolver(
@@ -21,13 +23,14 @@ class JwtResolver(
         return BEARER_PATTERN.find(header)?.groupValues?.get(1)
     }
 
-    fun verifyAccessToken(accessToken: String): Boolean {
-        return kotlin.runCatching { getClaims(accessToken) }.isSuccess
+    fun verifyAccessToken(accessToken: String): Result<Claims> {
+        return kotlin.runCatching { getClaims(accessToken) }
     }
 
     fun getClaims(accessToken: String): Claims {
         return Jwts.parser()
             .verifyWith(key)
+            .requireExpiration(Date.from(Instant.now()))
             .build()
             .parseSignedClaims(accessToken)
             .payload

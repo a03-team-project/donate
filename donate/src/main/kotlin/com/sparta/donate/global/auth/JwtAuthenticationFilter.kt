@@ -1,5 +1,6 @@
 package com.sparta.donate.global.auth
 
+import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -22,12 +23,17 @@ class JwtAuthenticationFilter(
         val jwt = jwtResolver.resolveToken(request)
 
         jwt.let {
-            if (jwtResolver.verifyAccessToken(it!!)) {
-                jwtResolver.getClaims(it)
-                    .let { claims -> userDetailsService.loadUserByUsername(claims["nickname"] as String) }
-                    .let { userDetails ->  UsernamePasswordAuthenticationToken.authenticated(userDetails, "", userDetails.authorities) }
-                    .let { authentication -> SecurityContextHolder.getContext().authentication = authentication } }
+            jwtResolver.verifyAccessToken(it!!)
+                .onSuccess { claims ->
+                    userDetailsService.loadUserByUsername(claims["nickname"] as String)
+                        .let { userDetails -> UsernamePasswordAuthenticationToken.authenticated(userDetails, "", userDetails.authorities) }
+                        .let { authentication -> SecurityContextHolder.getContext().authentication = authentication } }
+                .onFailure {exception ->
+                    when (exception) {
+                        is ExpiredJwtException -> request.setAttribute("exception", ErrorCode.EXPIRED_ACCESS_TOKEN)
+                    }
+                }
+            filterChain.doFilter(request, response)
         }
-        filterChain.doFilter(request, response)
     }
 }
