@@ -1,7 +1,7 @@
 package com.sparta.donate.api.donate
 
 import com.sparta.donate.application.donate.DonateService
-import com.sparta.donate.domain.common.SortOrder
+import com.sparta.donate.global.common.SortOrder
 import com.sparta.donate.dto.donate.request.DonateRequest
 import com.sparta.donate.dto.donate.response.DonateResponse
 import org.springframework.http.HttpStatus

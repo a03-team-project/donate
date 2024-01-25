@@ -1,15 +1,14 @@
 package com.sparta.donate.api.member
 
 import com.sparta.donate.application.member.MemberService
+import com.sparta.donate.dto.member.ProfileRequest
+import com.sparta.donate.dto.member.ProfileResponse
 import com.sparta.donate.dto.member.request.SignInRequest
 import com.sparta.donate.dto.member.request.SignUpRequest
 import com.sparta.donate.dto.member.response.JwtResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RestController
@@ -34,6 +33,15 @@ class MemberController(
     fun logout(): ResponseEntity<Unit> {
         memberService.logout()
         return ResponseEntity.ok().build()
+    }
+
+    @PutMapping("/profile")
+    fun update(@RequestBody request: ProfileRequest): ResponseEntity<ProfileResponse> {
+        // 1. 이메일이 id 가 돼서 비밀번호가 리스트로 들어간다.
+        // 2. 회원가입을 했을 때 사용한 비밀번호도 최근 3번 안에 사용한 비밀번호에 해당한다.
+        // 3. 프로필 수정 Request, Response Dto 생성
+        val profileResponse = memberService.updateProfile(request)
+        return ResponseEntity.ok(profileResponse)
     }
 
 }

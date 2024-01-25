@@ -1,5 +1,6 @@
 package com.sparta.donate.domain.member
 
+import com.sparta.donate.dto.member.ProfileResponse
 import com.sparta.donate.dto.member.request.SignUpRequest
 import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
@@ -12,7 +13,8 @@ class Member private constructor(
     _name: String,
     _password: String,
     _role: String,
-    _email: String
+    _email: String,
+    _introduce: String
 ) : BaseEntity() {
 
     @Id
@@ -41,6 +43,9 @@ class Member private constructor(
     var refreshToken: String? = null
         private set
 
+    @Column(name = "introduce")
+    var introduce: String = _introduce
+
     @Column(name = "email", unique = true)
     val email: String = _email
 
@@ -52,13 +57,24 @@ class Member private constructor(
         this.refreshToken = null
     }
 
+    fun update(introduce: String, updatedPassword: String) {
+        this.introduce = introduce
+        this.password = updatedPassword
+    }
+
+    fun from() = ProfileResponse(
+        email = this.email,
+        introduce = this.introduce
+    )
+
     companion object {
         fun of(request: SignUpRequest) = Member(
             _nickname = request.nickname,
             _name = request.name,
             _password = request.password,
             _role = request.role,
-            _email = request.email
+            _email = request.email,
+            _introduce = request.introduce
         )
     }
 

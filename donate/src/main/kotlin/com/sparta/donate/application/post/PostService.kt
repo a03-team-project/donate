@@ -1,6 +1,6 @@
 package com.sparta.donate.application.post
 
-import com.sparta.donate.domain.common.SortOrder
+import com.sparta.donate.global.common.SortOrder
 import com.sparta.donate.domain.post.Post
 import com.sparta.donate.dto.post.request.CreatePostRequest
 import com.sparta.donate.dto.post.request.UpdatePostRequest
