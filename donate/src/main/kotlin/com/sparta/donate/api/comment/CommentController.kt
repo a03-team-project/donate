@@ -15,7 +15,7 @@ class CommentController(
     @PostMapping
     fun creatComment(
         @PathVariable postId: Long,
-        @RequestBody commentRequest: CommentRequest
+        @RequestBody commentRequest: CommentRequest,
     ): ResponseEntity<CommentResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -24,13 +24,12 @@ class CommentController(
 
     @PatchMapping("/{commentId}")
     fun updateComment(
-        @PathVariable postId: Long,
         @PathVariable commentId: Long,
         @RequestBody commentRequest: CommentRequest
     ): ResponseEntity<CommentResponse>{
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(commentService.updateComment(postId, commentId, commentRequest))
+            .body(commentService.updateComment(commentId, commentRequest))
     }
 
 
