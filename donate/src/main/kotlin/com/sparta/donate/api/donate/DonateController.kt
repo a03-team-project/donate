@@ -6,6 +6,7 @@ import com.sparta.donate.dto.donate.request.DonateRequest
 import com.sparta.donate.dto.donate.response.DonateResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -24,7 +25,6 @@ class DonateController (
             .body(donateService.createDonate(postId, donateRequest))
     }
 
-    // 모든 기부내역 조회
     @GetMapping
     fun getAllDonateList(
         @RequestParam sortOrder: SortOrder
@@ -34,8 +34,6 @@ class DonateController (
             .body(donateService.getAllDonateList(sortOrder))
     }
 
-
-    // 포스트별 기부내역 조회
     @GetMapping("/{postId}")
     fun getAllDonateListByPostId(
         @PathVariable postId: Long,
@@ -48,6 +46,7 @@ class DonateController (
 
 
     @DeleteMapping("/{postId}/{donateId}")
+    @PreAuthorize("hasRole('ADMIN')")
     fun deleteDonateById(
         @PathVariable postId: Long,
         @PathVariable donateId: Long

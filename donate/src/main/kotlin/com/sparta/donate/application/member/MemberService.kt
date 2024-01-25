@@ -2,17 +2,17 @@ package com.sparta.donate.application.member
 
 import com.sparta.donate.domain.member.Member
 import com.sparta.donate.domain.member.PasswordHistory
-import com.sparta.donate.dto.member.ProfileRequest
-import com.sparta.donate.dto.member.ProfileResponse
+import com.sparta.donate.dto.member.request.ProfileRequest
+import com.sparta.donate.dto.member.response.ProfileResponse
 import com.sparta.donate.dto.member.request.SignInRequest
 import com.sparta.donate.dto.member.request.SignUpRequest
 import com.sparta.donate.dto.member.response.JwtResponse
+import com.sparta.donate.global.auth.AuthenticationUtil
 import com.sparta.donate.global.auth.JwtProvider
 import com.sparta.donate.repository.member.MemberRepository
 import com.sparta.donate.repository.password.PasswordRepository
 import jakarta.transaction.Transactional
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -48,20 +48,23 @@ class MemberService(
         val (email, password) = request
         val member = getByEmailAndPassword(email, password)
         val jwt = jwtProvider.generateJwt(member)
+
         member.saveRefreshToken(jwt.refreshToken)
+
         return jwt
     }
 
+
     @Transactional
     fun logout() {
-        val userDetails = SecurityContextHolder.getContext().authentication.principal as UserDetails
-        val member = memberRepository.findByNickname(userDetails.username) ?: TODO("throw NoSuchEntityException()")
+        val authenticatedId = AuthenticationUtil.getAuthenticationUserId()
+        val member = memberRepository.findByIdOrNull(authenticatedId) ?: TODO("throw NoSuchEntityException()")
         member.logout()
     }
 
     @Transactional
     fun updateProfile(request: ProfileRequest): ProfileResponse {
-        val passwordHistories: List<PasswordHistory> = passwordRepository.findAllByEmailOrderByUpdatedAtDesc(request.email)
+        val passwordHistories = passwordRepository.findByEmailOrderByUpdatedAtDesc(request.email)
         val isDuplicate = passwordHistories.any { passwordEncoder.matches(request.password, it.password) }
 
         if(isDuplicate) {

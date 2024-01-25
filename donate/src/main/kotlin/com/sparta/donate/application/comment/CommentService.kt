@@ -3,6 +3,7 @@ package com.sparta.donate.application.comment
 import com.sparta.donate.domain.comment.Comment
 import com.sparta.donate.dto.comment.request.CommentRequest
 import com.sparta.donate.dto.comment.response.CommentResponse
+import com.sparta.donate.global.auth.AuthenticationUtil.getAuthenticationUserId
 import com.sparta.donate.repository.comment.CommentRepository
 import com.sparta.donate.repository.donate.DonateRepository
 import com.sparta.donate.repository.member.MemberRepository
@@ -21,33 +22,39 @@ class CommentService(
 
     @Transactional
     fun createComment(postId: Long, request: CommentRequest): CommentResponse {
-        // TODO: 로그인 한 사용자만 댓글 작성 가능해야 함
+        val authenticatedId = getAuthenticationUserId()
         val post = postRepository.findByIdOrNull(postId) ?: throw IllegalStateException()
-        val member = memberRepository.findByIdOrNull(request.memberId) ?: throw IllegalStateException()
-        val donationAmount: Long = donateRepository.findByMemberIdAndPostId(request.memberId, postId)?.amount ?: 0
+        val member = memberRepository.findByIdOrNull(authenticatedId)!!
+        val donate = donateRepository.findByMemberIdAndPostId(authenticatedId, postId)
+        val donateAmount = donate?.sumOf { it.amount } ?: 0
+        val comment = Comment.of(request, member, post)
 
-        commentRepository.save(Comment.toEntity(request, member, post))
-            .let { return it.toResponse(donationAmount) }
+        commentRepository.save(comment)
+
+        return comment.from(donateAmount)
     }
 
+
     @Transactional
-    fun updateComment(postId: Long, commentId: Long, request: CommentRequest): CommentResponse{
-        // TODO: 댓글을 작성한 사용자만 댓글 수정 가능해야 함
+    fun updateComment(commentId: Long, request: CommentRequest): CommentResponse {
+        val authenticatedId = getAuthenticationUserId()
         val comment = getByIdOrNull(commentId)
 
-        comment.update(request.content)
+        comment.update(request.content, authenticatedId)
 
-        return comment.toResponse()
+        return comment.from()
     }
 
     @Transactional
-    fun deleteComment(postId: Long, commentId: Long){
-        // TODO: 댓글을 작성한 사용자만 댓글 삭제가 가능해야 함
-        val commentToDelete = getByIdOrNull(commentId)
-        commentRepository.delete(commentToDelete)
+    fun deleteComment(postId: Long, commentId: Long) {
+        val authenticatedId = getAuthenticationUserId()
+        val comment = getByIdOrNull(commentId)
+
+        if (comment.verify(authenticatedId)) {
+            commentRepository.delete(comment)
+        }
     }
 
     fun getByIdOrNull(commentId: Long) = commentRepository.findByIdOrNull(commentId) ?: TODO("NoSuchEntityException()")
 
 }
-
