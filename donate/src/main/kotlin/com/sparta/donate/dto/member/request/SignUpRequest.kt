@@ -21,4 +21,7 @@ data class SignUpRequest(
 
     val name: String,
     val nickname: String,
+    val introduce: String,
 )
+
+
