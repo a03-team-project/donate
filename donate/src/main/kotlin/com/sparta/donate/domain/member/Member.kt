@@ -1,6 +1,6 @@
 package com.sparta.donate.domain.member
 
-import com.sparta.donate.dto.member.ProfileResponse
+import com.sparta.donate.dto.member.response.ProfileResponse
 import com.sparta.donate.dto.member.request.SignUpRequest
 import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
@@ -12,7 +12,7 @@ class Member private constructor(
     _nickname: String,
     _name: String,
     _password: String,
-    _role: String,
+    _role: MemberRole,
     _email: String,
     _introduce: String
 ) : BaseEntity() {
@@ -36,7 +36,8 @@ class Member private constructor(
         private set
 
     @Column(name = "role")
-    var role: String = _role
+    @Enumerated(EnumType.STRING)
+    var role: MemberRole = _role
         private set
 
     @Column(name = "refresh_token")
