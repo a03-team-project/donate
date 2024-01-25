@@ -8,6 +8,7 @@ import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
+import org.springframework.security.access.AccessDeniedException
 
 @Entity
 @Table(name = "comments")
@@ -40,31 +41,43 @@ class Comment private constructor(
     var post: Post = _post
         private set
 
-    fun toResponse(amount: Long): CommentResponse {
+    fun from(amount: Long): CommentResponse {
         return CommentResponse(
-            id = id!!,
             nickname = member.nickname,
-            date = createdAt,
+            createdAt = createdAt,
             content = content,
             donationAmount = amount
         )
     }
-    fun toResponse(): CommentResponse{
+
+    fun from(): CommentResponse {
         return CommentResponse(
-            id = id!!,
             nickname = member.nickname,
-            date = createdAt,
+            createdAt = createdAt,
             content = content,
             donationAmount = null
         )
     }
 
 
-    fun update(newContent: String){
-        content = newContent
+    fun update(newContent: String, authenticationId: Long) {
+        if (verify(authenticationId)) {
+            content = newContent
+            return
+        }
+
     }
+
+    fun verify(authenticationId: Long): Boolean {
+        if (this.member.id == authenticationId) {
+            return true
+        }
+
+        throw AccessDeniedException("Verify Failed")
+    }
+
     companion object {
-        fun toEntity(request: CommentRequest, member: Member, post: Post): Comment {
+        fun of(request: CommentRequest, member: Member, post: Post): Comment {
             return Comment(
                 _member = member,
                 _content = request.content,

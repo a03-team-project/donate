@@ -1,4 +1,4 @@
-package com.sparta.donate.dto.member
+package com.sparta.donate.dto.member.request
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
