@@ -25,9 +25,9 @@ class CustomUserDetailsService(
 
     private fun generateUserDetails(member: Member): UserDetails =
         User(
-            member.nickname,
+            member.id.toString(),
             "",
-            setOf(SimpleGrantedAuthority("ROLE_${member.role}"))
+            setOf(SimpleGrantedAuthority("ROLE_${member.role.name}"))
         )
 
 }

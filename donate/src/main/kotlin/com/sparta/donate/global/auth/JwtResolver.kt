@@ -6,8 +6,6 @@ import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
-import java.time.Instant
-import java.util.*
 
 @Component
 class JwtResolver(
@@ -16,11 +14,11 @@ class JwtResolver(
 
     private val key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
 
-    private val BEARER_PATTERN = Regex("^Bearer (.*?)$")
+    private val bearerRegex = Regex("^Bearer (.*?)$")
 
     fun resolveToken(request: HttpServletRequest): String? {
         val header = request.getHeader(HttpHeaders.AUTHORIZATION) ?: return null
-        return BEARER_PATTERN.find(header)?.groupValues?.get(1)
+        return bearerRegex.find(header)?.groupValues?.get(1)
     }
 
     fun verifyAccessToken(accessToken: String): Result<Claims> {
@@ -30,7 +28,6 @@ class JwtResolver(
     fun getClaims(accessToken: String): Claims {
         return Jwts.parser()
             .verifyWith(key)
-            .requireExpiration(Date.from(Instant.now()))
             .build()
             .parseSignedClaims(accessToken)
             .payload
