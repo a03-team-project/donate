@@ -8,6 +8,7 @@ import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
+import org.springframework.security.access.AccessDeniedException
 import java.time.LocalDateTime
 
 @Entity
@@ -62,9 +63,20 @@ class Post private constructor(
             endedAt = endedAt
         )
 
-    fun updatePost(request: UpdatePostRequest) {
-        request.title?.let { this.title = title }
-        request.content?.let { this.content = content }
+    fun updatePost(request: UpdatePostRequest, authenticationId: Long) {
+        if (verify(authenticationId)) {
+            title = request.title
+            content = request.content
+            return
+        }
+    }
+
+    fun verify(authenticationId: Long): Boolean {
+        if (this.member.id == authenticationId) {
+            return true
+        }
+
+        throw AccessDeniedException("Verify Failed")
     }
 
 }

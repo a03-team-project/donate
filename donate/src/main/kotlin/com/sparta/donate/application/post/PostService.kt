@@ -4,7 +4,7 @@ import com.sparta.donate.domain.post.Post
 import com.sparta.donate.dto.post.request.CreatePostRequest
 import com.sparta.donate.dto.post.request.UpdatePostRequest
 import com.sparta.donate.dto.post.response.PostResponse
-import com.sparta.donate.global.auth.AuthenticationUtil
+import com.sparta.donate.global.auth.AuthenticationUtil.getAuthenticationUserId
 import com.sparta.donate.global.common.SortOrder
 import com.sparta.donate.global.exception.common.NoSuchEntityException
 import com.sparta.donate.repository.member.MemberRepository
@@ -22,7 +22,7 @@ class PostService(
 
     @Transactional
     fun createPost(request: CreatePostRequest): PostResponse {
-        val authenticatedId = AuthenticationUtil.getAuthenticationUserId()
+        val authenticatedId = getAuthenticationUserId()
         val member = memberRepository.findByIdOrNull(authenticatedId) ?: throw NoSuchEntityException("MEMBER")
         val post = postRepository.save(Post.toEntity(request, member))
 
@@ -45,15 +45,24 @@ class PostService(
 
     @Transactional
     fun updatePost(postId: Long, request: UpdatePostRequest): PostResponse {
-        val savedPost = postRepository.findByIdOrNull(postId) ?: throw NoSuchEntityException("POST")
-        savedPost.updatePost(request)
+        val authenticatedId = getAuthenticationUserId()
+        val savedPost = getByIdOrNull(postId)
+
+        savedPost.updatePost(request, authenticatedId)
 
         return savedPost.from()
     }
 
     @Transactional
     fun deletePost(postId: Long) {
-        postRepository.deleteById(postId)
+        val authenticatedId = getAuthenticationUserId()
+        val post = getByIdOrNull(postId)
+
+        if (post.verify(authenticatedId)){
+            postRepository.delete(post)
+        }
     }
+
+    fun getByIdOrNull(postId: Long) = postRepository.findByIdOrNull(postId) ?: throw NoSuchEntityException("POST")
 
 }
