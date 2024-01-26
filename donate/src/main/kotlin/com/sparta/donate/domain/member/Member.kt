@@ -4,6 +4,7 @@ import com.sparta.donate.dto.member.response.ProfileResponse
 import com.sparta.donate.dto.member.request.SignUpRequest
 import com.sparta.donate.global.entity.BaseEntity
 import jakarta.persistence.*
+import org.springframework.security.access.AccessDeniedException
 
 
 @Entity
@@ -67,6 +68,14 @@ class Member private constructor(
         email = this.email,
         introduce = this.introduce
     )
+
+    fun verify(authenticatedId: Long): Boolean {
+        if (this.id == authenticatedId) {
+            return true
+        }
+
+        throw AccessDeniedException("Verify Failed")
+    }
 
     companion object {
         fun of(request: SignUpRequest) = Member(

@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import javax.naming.AuthenticationException
 
 @Service
 class MemberService(
@@ -74,10 +75,12 @@ class MemberService(
         if (isDuplicate) {
             throw InvalidPasswordException()
         }
+
+        val authenticatedId = AuthenticationUtil.getAuthenticationUserId()
+        val member = getByEmailOrNull(request.email)
+        member.verify(authenticatedId)
+
         val updatedPassword = passwordEncoder.encode(request.password)
-
-        val member = memberRepository.findByEmail(request.email) ?: throw NoSuchEntityException("MEMBER")
-
         member.update(request.introduce, updatedPassword)
 
         if (passwordHistories.size <= 3) {
@@ -94,5 +97,7 @@ class MemberService(
             ?.takeIf { passwordEncoder.matches(password, it.password) }
             ?: throw NoSuchEntityException("MEMBER")
     }
+
+    fun getByEmailOrNull(email: String) = memberRepository.findByEmail(email) ?: throw NoSuchEntityException("MEMBER")
 
 }
