@@ -5,6 +5,7 @@ import com.sparta.donate.application.post.PostService
 import com.sparta.donate.dto.post.request.CreatePostRequest
 import com.sparta.donate.dto.post.request.UpdatePostRequest
 import com.sparta.donate.dto.post.response.PostResponse
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,7 +19,7 @@ class AdminController(
 
     @PostMapping("/posts")
     fun createPost(
-        @RequestBody createPostRequest: CreatePostRequest,
+        @Valid @RequestBody createPostRequest: CreatePostRequest,
     ): ResponseEntity<PostResponse> {
         val createdPost = postService.createPost(createPostRequest)
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost)
@@ -27,7 +28,7 @@ class AdminController(
     @PutMapping("/posts/{postsId}")
     fun updatePost(
         @PathVariable postsId: Long,
-        @RequestBody updatePostRequest: UpdatePostRequest
+        @Valid @RequestBody updatePostRequest: UpdatePostRequest
     ): ResponseEntity<PostResponse> {
         val updatedPost = postService.updatePost(postsId, updatePostRequest)
         return ResponseEntity.status(HttpStatus.OK).body(updatedPost)
