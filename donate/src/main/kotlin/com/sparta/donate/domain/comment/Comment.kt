@@ -15,7 +15,8 @@ import org.springframework.security.access.AccessDeniedException
 class Comment private constructor(
     _member: Member,
     _content: String,
-    _post: Post
+    _post: Post,
+    _amount: Long
 ) : BaseEntity() {
 
     @Id
@@ -27,6 +28,10 @@ class Comment private constructor(
 
     @Column(name = "content")
     var content: String = _content
+        private set
+
+    @Column(name = "amount")
+    var amount: Long = _amount
         private set
 
     @ManyToOne
@@ -41,21 +46,13 @@ class Comment private constructor(
     var post: Post = _post
         private set
 
-    fun from(amount: Long): CommentResponse {
-        return CommentResponse(
-            nickname = member.nickname,
-            createdAt = createdAt,
-            content = content,
-            donationAmount = amount
-        )
-    }
 
     fun from(): CommentResponse {
         return CommentResponse(
             nickname = member.nickname,
             createdAt = createdAt,
             content = content,
-            donationAmount = null
+            donationAmount = amount
         )
     }
 
@@ -68,6 +65,10 @@ class Comment private constructor(
 
     }
 
+    fun updateAmount(newAmount: Long){
+        amount = newAmount
+    }
+
     fun verify(authenticationId: Long): Boolean {
         if (this.member.id == authenticationId) {
             return true
@@ -77,11 +78,12 @@ class Comment private constructor(
     }
 
     companion object {
-        fun of(request: CommentRequest, member: Member, post: Post): Comment {
+        fun of(request: CommentRequest, member: Member, post: Post, amount: Long): Comment {
             return Comment(
                 _member = member,
                 _content = request.content,
-                _post = post
+                _post = post,
+                _amount = amount
             )
         }
     }

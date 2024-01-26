@@ -28,11 +28,13 @@ class CommentService(
         val member = memberRepository.findByIdOrNull(authenticatedId)!!
         val donate = donateRepository.findByMemberIdAndPostId(authenticatedId, postId)
         val donateAmount = donate?.sumOf { it.amount } ?: 0
-        val comment = Comment.of(request, member, post)
+        val updateComment = commentRepository.findByMemberIdAndPostId(authenticatedId, postId)
+        updateComment.map{ it.updateAmount(donateAmount)}
+        val comment = Comment.of(request, member, post, donateAmount)
 
         commentRepository.save(comment)
 
-        return comment.from(donateAmount)
+        return comment.from()
     }
 
 
