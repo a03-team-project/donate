@@ -4,6 +4,7 @@ import com.sparta.donate.application.donate.DonateService
 import com.sparta.donate.dto.donate.request.DonateRequest
 import com.sparta.donate.dto.donate.response.DonateResponse
 import com.sparta.donate.global.common.SortOrder
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,7 +18,7 @@ class DonateController (
     @PostMapping("/{postId}")
     fun createDonate(
         @PathVariable postId: Long,
-        @RequestBody donateRequest: DonateRequest
+        @Valid @RequestBody donateRequest: DonateRequest
     ): ResponseEntity<DonateResponse>{
         return ResponseEntity
             .status(HttpStatus.CREATED)

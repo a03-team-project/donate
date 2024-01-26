@@ -3,6 +3,7 @@ package com.sparta.donate.api.comment
 import com.sparta.donate.application.comment.CommentService
 import com.sparta.donate.dto.comment.request.CommentRequest
 import com.sparta.donate.dto.comment.response.CommentResponse
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,7 +16,7 @@ class CommentController(
     @PostMapping
     fun creatComment(
         @PathVariable postId: Long,
-        @RequestBody commentRequest: CommentRequest,
+        @Valid @RequestBody commentRequest: CommentRequest,
     ): ResponseEntity<CommentResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -25,7 +26,7 @@ class CommentController(
     @PatchMapping("/{commentId}")
     fun updateComment(
         @PathVariable commentId: Long,
-        @RequestBody commentRequest: CommentRequest
+        @Valid @RequestBody commentRequest: CommentRequest
     ): ResponseEntity<CommentResponse>{
         return ResponseEntity
             .status(HttpStatus.OK)
