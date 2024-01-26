@@ -74,10 +74,12 @@ class MemberService(
         if (isDuplicate) {
             throw InvalidPasswordException()
         }
+
+        val authenticatedId = AuthenticationUtil.getAuthenticationUserId()
+        val member = getByEmailOrNull(request.email)
+        member.verify(authenticatedId)
+
         val updatedPassword = passwordEncoder.encode(request.password)
-
-        val member = memberRepository.findByEmail(request.email) ?: throw NoSuchEntityException("MEMBER")
-
         member.update(request.introduce, updatedPassword)
 
         if (passwordHistories.size <= 3) {
@@ -94,5 +96,7 @@ class MemberService(
             ?.takeIf { passwordEncoder.matches(password, it.password) }
             ?: throw NoSuchEntityException("MEMBER")
     }
+
+    fun getByEmailOrNull(email: String) = memberRepository.findByEmail(email) ?: throw NoSuchEntityException("MEMBER")
 
 }
