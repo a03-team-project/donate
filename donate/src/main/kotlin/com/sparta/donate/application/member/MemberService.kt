@@ -68,7 +68,7 @@ class MemberService(
 
     @Transactional
     fun updateProfile(request: ProfileRequest): ProfileResponse {
-        val passwordHistories = passwordRepository.findByEmailOrderByUpdatedAtDesc(request.email)
+        val passwordHistories = passwordRepository.findByEmailOrderByUpdatedAtAsc(request.email)
         val isDuplicate = passwordHistories.any { passwordEncoder.matches(request.password, it.password) }
 
         if (isDuplicate) {

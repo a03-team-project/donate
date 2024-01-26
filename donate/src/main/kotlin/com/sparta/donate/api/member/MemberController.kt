@@ -36,7 +36,7 @@ class MemberController(
     }
 
     @PutMapping("/profile")
-    fun update(@RequestBody request: ProfileRequest): ResponseEntity<ProfileResponse> {
+    fun update(@Valid @RequestBody request: ProfileRequest): ResponseEntity<ProfileResponse> {
         val profileResponse = memberService.updateProfile(request)
         return ResponseEntity.ok(profileResponse)
     }
