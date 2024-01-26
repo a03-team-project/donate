@@ -9,6 +9,10 @@ import com.sparta.donate.dto.member.request.SignUpRequest
 import com.sparta.donate.dto.member.response.JwtResponse
 import com.sparta.donate.global.auth.AuthenticationUtil
 import com.sparta.donate.global.auth.JwtProvider
+import com.sparta.donate.global.exception.common.NoSuchEntityException
+import com.sparta.donate.global.exception.member.DuplicateEmailException
+import com.sparta.donate.global.exception.member.DuplicateNicknameException
+import com.sparta.donate.global.exception.member.InvalidPasswordException
 import com.sparta.donate.repository.member.MemberRepository
 import com.sparta.donate.repository.password.PasswordRepository
 import jakarta.transaction.Transactional
@@ -28,11 +32,11 @@ class MemberService(
     fun signup(request: SignUpRequest): Long {
 
         if (memberRepository.existsByEmail(request.email)) {
-            TODO("DuplicateEmailException")
+            throw DuplicateEmailException(request.email)
         }
 
         if (memberRepository.existsByNickname(request.nickname)) {
-            TODO("DuplicateNicknameException")
+            throw DuplicateNicknameException(request.nickname)
         }
 
         val member = Member.of(request.copy(password = passwordEncoder.encode(request.password)))
@@ -58,7 +62,7 @@ class MemberService(
     @Transactional
     fun logout() {
         val authenticatedId = AuthenticationUtil.getAuthenticationUserId()
-        val member = memberRepository.findByIdOrNull(authenticatedId) ?: TODO("throw NoSuchEntityException()")
+        val member = memberRepository.findByIdOrNull(authenticatedId) ?: throw NoSuchEntityException("MEMBER")
         member.logout()
     }
 
@@ -67,18 +71,20 @@ class MemberService(
         val passwordHistories = passwordRepository.findByEmailOrderByUpdatedAtDesc(request.email)
         val isDuplicate = passwordHistories.any { passwordEncoder.matches(request.password, it.password) }
 
-        if(isDuplicate) {
-            throw RuntimeException()
+        if (isDuplicate) {
+            throw InvalidPasswordException()
         }
         val updatedPassword = passwordEncoder.encode(request.password)
+
+        val member = memberRepository.findByEmail(request.email) ?: throw NoSuchEntityException("MEMBER")
+
+        member.update(request.introduce, updatedPassword)
+
         if (passwordHistories.size <= 3) {
             passwordRepository.save(PasswordHistory.of(request.email, updatedPassword))
         } else {
             passwordHistories[0].update(updatedPassword)
         }
-
-        val member = memberRepository.findByEmail(request.email) ?: TODO("NoSuchEntityException")
-        member.update(request.introduce, updatedPassword)
 
         return member.from()
     }
@@ -86,7 +92,7 @@ class MemberService(
     private fun getByEmailAndPassword(email: String, password: String): Member {
         return memberRepository.findByEmail(email)
             ?.takeIf { passwordEncoder.matches(password, it.password) }
-            ?: TODO("NoSuchEntityException")
+            ?: throw NoSuchEntityException("MEMBER")
     }
 
 }

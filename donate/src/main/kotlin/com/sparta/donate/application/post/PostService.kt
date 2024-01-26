@@ -1,12 +1,12 @@
 package com.sparta.donate.application.post
 
-import com.sparta.donate.global.common.SortOrder
 import com.sparta.donate.domain.post.Post
 import com.sparta.donate.dto.post.request.CreatePostRequest
 import com.sparta.donate.dto.post.request.UpdatePostRequest
 import com.sparta.donate.dto.post.response.PostResponse
 import com.sparta.donate.global.auth.AuthenticationUtil
-import com.sparta.donate.global.exception.ModelNotFoundException
+import com.sparta.donate.global.common.SortOrder
+import com.sparta.donate.global.exception.common.NoSuchEntityException
 import com.sparta.donate.repository.member.MemberRepository
 import com.sparta.donate.repository.post.PostRepository
 import org.springframework.data.domain.Sort
@@ -23,7 +23,7 @@ class PostService(
     @Transactional
     fun createPost(request: CreatePostRequest): PostResponse {
         val authenticatedId = AuthenticationUtil.getAuthenticationUserId()
-        val member = memberRepository.findByIdOrNull(authenticatedId) ?: TODO("throw NoSuchEntityException()")
+        val member = memberRepository.findByIdOrNull(authenticatedId) ?: throw NoSuchEntityException("MEMBER")
         val post = postRepository.save(Post.toEntity(request, member))
 
         return post.from()
@@ -38,14 +38,14 @@ class PostService(
 
     @Transactional(readOnly = true)
     fun getPostById(postId: Long): PostResponse {
-        val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
+        val post = postRepository.findByIdOrNull(postId) ?: throw NoSuchEntityException("POST")
 
         return post.from()
     }
 
     @Transactional
     fun updatePost(postId: Long, request: UpdatePostRequest): PostResponse {
-        val savedPost = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
+        val savedPost = postRepository.findByIdOrNull(postId) ?: throw NoSuchEntityException("POST")
         savedPost.updatePost(request)
 
         return savedPost.from()

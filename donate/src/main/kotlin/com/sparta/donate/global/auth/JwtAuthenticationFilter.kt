@@ -1,5 +1,6 @@
 package com.sparta.donate.global.auth
 
+import com.sparta.donate.global.exception.auth.AuthErrorCode
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -30,8 +31,8 @@ class JwtAuthenticationFilter(
                         .let { authentication -> SecurityContextHolder.getContext().authentication = authentication } }
                 .onFailure {exception ->
                     when (exception) {
-                        is ExpiredJwtException -> request.setAttribute("exception", ErrorCode.EXPIRED_ACCESS_TOKEN)
-                        else -> request.setAttribute("exception", ErrorCode.COMMON_UNAUTHORIZED)
+                        is ExpiredJwtException -> request.setAttribute("exception", AuthErrorCode.EXPIRED_ACCESS_TOKEN)
+                        else -> request.setAttribute("exception", AuthErrorCode.COMMON_UNAUTHORIZED)
                     }
                 }
         }
