@@ -1,10 +1,11 @@
 package com.sparta.donate.application.donate
 
-import com.sparta.donate.global.common.SortOrder
 import com.sparta.donate.domain.donate.Donate
 import com.sparta.donate.dto.donate.request.DonateRequest
 import com.sparta.donate.dto.donate.response.DonateResponse
 import com.sparta.donate.global.auth.AuthenticationUtil.getAuthenticationUserId
+import com.sparta.donate.global.common.SortOrder
+import com.sparta.donate.global.exception.common.NoSuchEntityException
 import com.sparta.donate.repository.donate.DonateRepository
 import com.sparta.donate.repository.member.MemberRepository
 import com.sparta.donate.repository.post.PostRepository
@@ -22,8 +23,8 @@ class DonateService(
     @Transactional
     fun createDonate(postId: Long, request: DonateRequest): DonateResponse {
         val authenticatedId = getAuthenticationUserId()
-        val post = postRepository.findByIdOrNull(postId) ?: throw IllegalStateException()
-        val member = memberRepository.findByIdOrNull(authenticatedId) ?: throw IllegalStateException()
+        val post = postRepository.findByIdOrNull(postId) ?: throw NoSuchEntityException("POST")
+        val member = memberRepository.findByIdOrNull(authenticatedId) ?: throw NoSuchEntityException("MEMBER")
         val donate = Donate.of(request, member, post)
 
         donateRepository.save(donate)
@@ -47,7 +48,7 @@ class DonateService(
 
     @Transactional
     fun deleteDonate(postId: Long, donateId: Long) {
-        val donate = donateRepository.findByIdOrNull(donateId) ?: throw IllegalStateException()
+        val donate = donateRepository.findByIdOrNull(donateId) ?: throw NoSuchEntityException("DONATE")
         donateRepository.delete(donate)
     }
 

@@ -1,6 +1,8 @@
 package com.sparta.donate.global.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.sparta.donate.global.exception.auth.AuthErrorCode
+import com.sparta.donate.global.exception.response.ErrorResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
@@ -15,23 +17,23 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
         response: HttpServletResponse?,
         authException: AuthenticationException?
     ) {
-        val code: ErrorCode? = request?.getAttribute("exception") as ErrorCode?
+        val code: AuthErrorCode? = request?.getAttribute("exception") as AuthErrorCode?
 
         code?.let {
             when (code) {
-                ErrorCode.EXPIRED_ACCESS_TOKEN -> setResponse(response!!, code)
-                ErrorCode.COMMON_UNAUTHORIZED -> setResponse(response!!, code)
+                AuthErrorCode.EXPIRED_ACCESS_TOKEN -> setResponse(response!!, code)
+                else -> setResponse(response!!, AuthErrorCode.COMMON_UNAUTHORIZED)
             }
         }
     }
 
-    private fun setResponse(response: HttpServletResponse, code: ErrorCode) {
+    private fun setResponse(response: HttpServletResponse, code: AuthErrorCode) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = "UTF-8"
 
         val objectMapper = ObjectMapper()
-        val jsonString = objectMapper.writeValueAsString(code.reason)
+        val jsonString = objectMapper.writeValueAsString(ErrorResponse.Companion.of(code))
         response.writer.write(jsonString)
     }
 }

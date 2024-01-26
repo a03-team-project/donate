@@ -4,6 +4,7 @@ import com.sparta.donate.domain.comment.Comment
 import com.sparta.donate.dto.comment.request.CommentRequest
 import com.sparta.donate.dto.comment.response.CommentResponse
 import com.sparta.donate.global.auth.AuthenticationUtil.getAuthenticationUserId
+import com.sparta.donate.global.exception.common.NoSuchEntityException
 import com.sparta.donate.repository.comment.CommentRepository
 import com.sparta.donate.repository.donate.DonateRepository
 import com.sparta.donate.repository.member.MemberRepository
@@ -23,7 +24,7 @@ class CommentService(
     @Transactional
     fun createComment(postId: Long, request: CommentRequest): CommentResponse {
         val authenticatedId = getAuthenticationUserId()
-        val post = postRepository.findByIdOrNull(postId) ?: throw IllegalStateException()
+        val post = postRepository.findByIdOrNull(postId) ?: throw NoSuchEntityException("POST")
         val member = memberRepository.findByIdOrNull(authenticatedId)!!
         val donate = donateRepository.findByMemberIdAndPostId(authenticatedId, postId)
         val donateAmount = donate?.sumOf { it.amount } ?: 0
@@ -55,6 +56,6 @@ class CommentService(
         }
     }
 
-    fun getByIdOrNull(commentId: Long) = commentRepository.findByIdOrNull(commentId) ?: TODO("NoSuchEntityException()")
+    fun getByIdOrNull(commentId: Long) = commentRepository.findByIdOrNull(commentId) ?: throw NoSuchEntityException("COMMENT")
 
 }
