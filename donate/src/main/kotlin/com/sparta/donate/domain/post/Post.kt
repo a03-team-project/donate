@@ -1,6 +1,7 @@
 package com.sparta.donate.domain.post
 
 import com.sparta.donate.domain.member.Member
+import com.sparta.donate.dto.comment.response.CommentResponse
 import com.sparta.donate.dto.post.request.CreatePostRequest
 import com.sparta.donate.dto.post.request.UpdatePostRequest
 import com.sparta.donate.dto.post.response.PostResponse
@@ -54,14 +55,16 @@ class Post private constructor(
 
     }
 
-    fun from() = PostResponse(
+    fun from(commentList: List<CommentResponse> = emptyList()) = PostResponse(
             id = id,
             title = title,
             content = content,
             member = member.nickname,
             createdAt = createdAt,
-            endedAt = endedAt
-        )
+            endedAt = endedAt,
+            commentList = commentList
+    )
+
 
     fun updatePost(request: UpdatePostRequest, authenticationId: Long) {
         if (verify(authenticationId)) {
