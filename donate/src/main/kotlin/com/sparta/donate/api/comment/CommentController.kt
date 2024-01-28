@@ -9,11 +9,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/comments/{postId}")
+@RequestMapping("/api/v1/comments")
 class CommentController(
     private val commentService: CommentService
 ) {
-    @PostMapping
+    @PostMapping("/{postId}")
     fun creatComment(
         @PathVariable postId: Long,
         @Valid @RequestBody commentRequest: CommentRequest,
@@ -36,10 +36,9 @@ class CommentController(
 
     @DeleteMapping("/{commentId}")
     fun deleteComment(
-        @PathVariable postId: Long,
         @PathVariable commentId: Long
     ): ResponseEntity<Unit> {
-        commentService.deleteComment(postId, commentId)
+        commentService.deleteComment(commentId)
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
             .build()

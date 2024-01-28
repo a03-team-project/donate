@@ -53,7 +53,7 @@ class DonateService(
 
 
     @Transactional
-    fun deleteDonate(postId: Long, donateId: Long) {
+    fun deleteDonate(donateId: Long) {
         val donate = donateRepository.findByIdOrNull(donateId) ?: throw NoSuchEntityException("DONATE")
         donateRepository.delete(donate)
     }

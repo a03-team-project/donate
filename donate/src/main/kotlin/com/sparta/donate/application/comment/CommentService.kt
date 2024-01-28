@@ -49,7 +49,7 @@ class CommentService(
     }
 
     @Transactional
-    fun deleteComment(postId: Long, commentId: Long) {
+    fun deleteComment(commentId: Long) {
         val authenticatedId = getAuthenticationUserId()
         val comment = getByIdOrNull(commentId)
 

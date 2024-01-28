@@ -82,7 +82,7 @@ class MemberService(
         val updatedPassword = passwordEncoder.encode(request.password)
         member.update(request.introduce, updatedPassword)
 
-        if (passwordHistories.size <= 3) {
+        if (passwordHistories.size < 3) {
             passwordRepository.save(PasswordHistory.of(request.email, updatedPassword))
         } else {
             passwordHistories[0].update(updatedPassword)
