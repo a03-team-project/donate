@@ -31,9 +31,9 @@ class RestApiExceptionHandler {
         val errorCode = e.errorCode as CommonErrorCode
         logger.warn("NoSuchEntityException!", e)
 
-        errorCode.message = String.format(errorCode.message, e.entity)
+        val customMessage = String.format(errorCode.message, e.entity)
 
-        return ResponseEntity.status(errorCode.httpStatus()).body(ErrorResponse.of(errorCode))
+        return ResponseEntity.status(errorCode.httpStatus()).body(ErrorResponse.of(errorCode, customMessage))
     }
 
     @ExceptionHandler

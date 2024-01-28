@@ -40,6 +40,9 @@ data class ErrorResponse(
 
         fun of(errorCode: ErrorCode, bindingResult: BindingResult) =
             ErrorResponse(errorCode.errorName(), errorCode.message(), FieldError.of(bindingResult))
+
+        fun of(errorCode: ErrorCode, customMessage: String) =
+            ErrorResponse(errorCode.errorName(), customMessage, null)
     }
 
 }
