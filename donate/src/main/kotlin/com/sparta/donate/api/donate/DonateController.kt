@@ -3,7 +3,6 @@ package com.sparta.donate.api.donate
 import com.sparta.donate.application.donate.DonateService
 import com.sparta.donate.dto.donate.request.DonateRequest
 import com.sparta.donate.dto.donate.response.DonateResponse
-import com.sparta.donate.global.common.SortOrder
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,22 +25,13 @@ class DonateController (
     }
 
     @GetMapping
-    fun getAllDonateList(
-        @RequestParam sortOrder: SortOrder
-    ): ResponseEntity<List<DonateResponse>> {
+    fun getDonateListByMemberId(): ResponseEntity<List<DonateResponse>>{
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(donateService.getAllDonateList(sortOrder))
+            .body(donateService.getDonateListByMemberId())
     }
 
-    @GetMapping("/{postId}")
-    fun getAllDonateListByPostId(
-        @PathVariable postId: Long,
-        @RequestParam sortOrder: SortOrder
-    ): ResponseEntity<List<DonateResponse>> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(donateService.getAllDonateListByPostId(postId, sortOrder))
-    }
+
 
 }
+

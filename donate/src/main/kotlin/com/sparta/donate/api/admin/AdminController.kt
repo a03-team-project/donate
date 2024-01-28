@@ -2,9 +2,11 @@ package com.sparta.donate.api.admin
 
 import com.sparta.donate.application.donate.DonateService
 import com.sparta.donate.application.post.PostService
+import com.sparta.donate.dto.donate.response.DonateResponse
 import com.sparta.donate.dto.post.request.CreatePostRequest
 import com.sparta.donate.dto.post.request.UpdatePostRequest
 import com.sparta.donate.dto.post.response.PostResponse
+import com.sparta.donate.global.common.SortOrder
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -42,15 +44,34 @@ class AdminController(
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
-    @DeleteMapping("/donates/{postId}/{donateId}")
-    fun deleteDonateById(
+    @GetMapping("/donates")
+    fun getAllDonateList(
+        @RequestParam sortOrder: SortOrder
+    ): ResponseEntity<List<DonateResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(donateService.getAllDonateList(sortOrder))
+    }
+
+    @GetMapping("/donates/{postId}")
+    fun getAllDonateListByPostId(
         @PathVariable postId: Long,
+        @RequestParam sortOrder: SortOrder
+    ): ResponseEntity<List<DonateResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(donateService.getAllDonateListByPostId(postId, sortOrder))
+    }
+
+    @DeleteMapping("/donates/{donateId}")
+    fun deleteDonateById(
         @PathVariable donateId: Long
     ): ResponseEntity<Unit> {
-        donateService.deleteDonate(postId, donateId)
+        donateService.deleteDonate(donateId)
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
             .build()
     }
 
 }
+

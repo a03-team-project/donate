@@ -35,14 +35,14 @@ class DonateService(
 
     fun getAllDonateList(sortOrder: SortOrder): List<DonateResponse> =
         when (sortOrder) {
-            SortOrder.DESC -> donateRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).map { it.from() }
-            SortOrder.ASC -> donateRepository.findAll(Sort.by(Sort.Direction.ASC, "createdAt")).map { it.from() }
+            SortOrder.DESC -> donateRepository
+                .findAll(Sort.by(Sort.Direction.DESC, "createdAt")).map { it.from() }
+            SortOrder.ASC -> donateRepository
+                .findAll(Sort.by(Sort.Direction.ASC, "createdAt")).map { it.from() }
         }
 
 
     fun getAllDonateListByPostId(postId: Long, sortOrder: SortOrder): List<DonateResponse> {
-
-        // 포스트 아이디가 존재하지 않아 빈 리스트가 반환될 때
         postRepository.findByIdOrNull(postId) ?: throw NoSuchEntityException("POST")
 
         return when (sortOrder) {
@@ -51,13 +51,20 @@ class DonateService(
         }
     }
 
+    fun getDonateListByMemberId(): List<DonateResponse>{
+        val authenticatedId = getAuthenticationUserId()
+        return donateRepository.findByMemberId(authenticatedId)?.map { it.from() }
+            ?: throw NoSuchEntityException("DONATE")
+    }
+
 
     @Transactional
-    fun deleteDonate(postId: Long, donateId: Long) {
+    fun deleteDonate(donateId: Long) {
         val donate = donateRepository.findByIdOrNull(donateId) ?: throw NoSuchEntityException("DONATE")
         donateRepository.delete(donate)
     }
 
 }
+
 
 
