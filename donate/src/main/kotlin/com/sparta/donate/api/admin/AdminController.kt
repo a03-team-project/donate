@@ -42,12 +42,11 @@ class AdminController(
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
-    @DeleteMapping("/donates/{postId}/{donateId}")
+    @DeleteMapping("/donates/{donateId}")
     fun deleteDonateById(
-        @PathVariable postId: Long,
         @PathVariable donateId: Long
     ): ResponseEntity<Unit> {
-        donateService.deleteDonate(postId, donateId)
+        donateService.deleteDonate(donateId)
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
             .build()
