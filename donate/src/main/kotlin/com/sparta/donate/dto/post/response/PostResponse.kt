@@ -10,6 +10,7 @@ data class PostResponse(
     val title: String,
     val content: String,
     val member: String,
+    val amount: Long?,
     val commentList: List<CommentResponse>,
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
