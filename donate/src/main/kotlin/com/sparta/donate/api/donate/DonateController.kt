@@ -14,7 +14,7 @@ class DonateController (
     private val donateService: DonateService
 ) {
 
-    @PostMapping("/{postId}")
+    @PostMapping("/donate/{postId}")
     fun createDonate(
         @PathVariable postId: Long,
         @Valid @RequestBody donateRequest: DonateRequest
